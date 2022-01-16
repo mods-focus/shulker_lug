@@ -1,9 +1,5 @@
-# Fabric Example Mod
+# focus:shulker_lug
 
-## Setup
-
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
-
-## License
-
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+Shulker Local Upgrade for Guilding in a modern solution for
+an ages old problem: Why, in the name of Hylia, won't Mojang
+fix the damn inventory?!

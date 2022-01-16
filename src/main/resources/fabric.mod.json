@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "focus_shulker_lug",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "focus:shulker_lug",
+  "description": "Shulker Box with the ability to dispense blocks!",
   "authors": [
-    "Me!"
+    "Imphi"
   ],
   "contact": {
     "homepage": "https://fabricmc.net/",
@@ -14,25 +14,29 @@
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/focus_shulker_lug/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.fabricmc.example.ExampleMod"
+      {
+        "adapter": "kotlin",
+        "value": "place.imphi.mods.focus.ShulkerLugMod"
+      }
+    ],
+    "client": [
+      {
+        "adapter": "kotlin",
+        "value": "place.imphi.mods.focus.ShulkerLugModClient"
+      }
     ]
   },
-  "mixins": [
-    "modid.mixins.json"
-  ],
 
   "depends": {
     "fabricloader": ">=0.11.3",
+    "fabric-language-kotlin": ">=1.7.1+kotlin.1.6.10",
     "fabric": "*",
     "minecraft": "1.18.x",
     "java": ">=17"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }
