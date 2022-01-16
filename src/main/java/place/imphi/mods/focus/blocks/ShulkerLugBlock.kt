@@ -253,12 +253,18 @@ class ShulkerLugBlock(settings: Settings?) : BlockWithEntity(settings) {
     override fun onBreak(world: World, pos: BlockPos, state: BlockState?, player: PlayerEntity) {
         val blockEntity = world.getBlockEntity(pos)
         if (blockEntity is ShulkerLugBlockEntity) {
-            if (!world.isClient && player.isCreative && !blockEntity.isEmpty) {
+            if (!world.isClient && !blockEntity.isEmpty) {
                 val itemStack = ItemStack(SHULKER_LUG_BLOCK)
                 blockEntity.setStackNbt(itemStack)
                 if (blockEntity.hasCustomName()) {
                     itemStack.setCustomName(blockEntity.customName)
                 }
+                val itemEntity =
+                    ItemEntity(world, pos.x.toDouble() + 0.5, pos.y.toDouble() + 0.5, pos.z.toDouble() + 0.5, itemStack)
+                itemEntity.setToDefaultPickupDelay()
+                world.spawnEntity(itemEntity)
+            } else if (blockEntity.isEmpty) {
+                val itemStack = ItemStack(SHULKER_LUG_BLOCK)
                 val itemEntity =
                     ItemEntity(world, pos.x.toDouble() + 0.5, pos.y.toDouble() + 0.5, pos.z.toDouble() + 0.5, itemStack)
                 itemEntity.setToDefaultPickupDelay()
@@ -278,11 +284,9 @@ class ShulkerLugBlock(settings: Settings?) : BlockWithEntity(settings) {
      */
     override fun getDroppedStacks(state: BlockState?, initialBuilder: LootContext.Builder): List<ItemStack?>? {
         var builder = initialBuilder
-        val blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY)
+        val blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY) as ShulkerLugBlockEntity?
         if (blockEntity is ShulkerLugBlockEntity) {
-            builder = builder.putDrop(
-                CONTENTS
-            ) { _, consumer: Consumer<ItemStack?> ->
+            builder = builder.putDrop(CONTENTS) { _, consumer: Consumer<ItemStack?> ->
                 for (i in 0 until blockEntity.size()) {
                     consumer.accept(blockEntity.getStack(i))
                 }
