@@ -8,7 +8,6 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry
 import net.minecraft.advancement.criterion.Criteria
 import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntityType
-import net.minecraft.block.entity.ShulkerBoxBlockEntity
 import net.minecraft.block.piston.PistonBehavior
 import net.minecraft.client.item.TooltipContext
 import net.minecraft.entity.ItemEntity
@@ -254,6 +253,7 @@ class ShulkerLugBlock(settings: Settings?) : BlockWithEntity(settings) {
         val blockEntity = world.getBlockEntity(pos)
         if (blockEntity is ShulkerLugBlockEntity) {
             if (!world.isClient && !blockEntity.isEmpty) {
+                // If it's not empty, spawn entity with items
                 val itemStack = ItemStack(SHULKER_LUG_BLOCK)
                 blockEntity.setStackNbt(itemStack)
                 if (blockEntity.hasCustomName()) {
@@ -263,7 +263,8 @@ class ShulkerLugBlock(settings: Settings?) : BlockWithEntity(settings) {
                     ItemEntity(world, pos.x.toDouble() + 0.5, pos.y.toDouble() + 0.5, pos.z.toDouble() + 0.5, itemStack)
                 itemEntity.setToDefaultPickupDelay()
                 world.spawnEntity(itemEntity)
-            } else if (blockEntity.isEmpty) {
+            } else if (!world.isClient && blockEntity.isEmpty) {
+                // If it's  empty, spawn entity without nbt
                 val itemStack = ItemStack(SHULKER_LUG_BLOCK)
                 val itemEntity =
                     ItemEntity(world, pos.x.toDouble() + 0.5, pos.y.toDouble() + 0.5, pos.z.toDouble() + 0.5, itemStack)
@@ -277,21 +278,36 @@ class ShulkerLugBlock(settings: Settings?) : BlockWithEntity(settings) {
         super.onBreak(world, pos, state, player)
     }
 
+
+    override fun getPickStack(world: BlockView, pos: BlockPos?, state: BlockState?): ItemStack? {
+        println("PICK")
+        val itemStack = super.getPickStack(world, pos, state)
+        world.getBlockEntity(pos, SHULKER_LUG_BLOCK_ENTITY).ifPresent { blockEntity: ShulkerLugBlockEntity ->
+            blockEntity.setStackNbt(
+                itemStack
+            )
+        }
+        return itemStack
+    }
+
     /**
      * This method's been copied straight from the ShulkerBoxBlock definition,
      * and I've got no idea about what it does or how it does it, but it
      * works :D
      */
     override fun getDroppedStacks(state: BlockState?, initialBuilder: LootContext.Builder): List<ItemStack?>? {
-        var builder = initialBuilder
+        val builder = initialBuilder
         val blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY) as ShulkerLugBlockEntity?
         if (blockEntity is ShulkerLugBlockEntity) {
-            builder = builder.putDrop(CONTENTS) { _, consumer: Consumer<ItemStack?> ->
+            println(blockEntity.size())
+            builder.putDrop(CONTENTS) { _, consumer: Consumer<ItemStack?> ->
                 for (i in 0 until blockEntity.size()) {
+                    println(blockEntity.getStack(i))
                     consumer.accept(blockEntity.getStack(i))
                 }
             }
         }
+        println(builder)
         @Suppress("DEPRECATION")
         return super.getDroppedStacks(state, builder)
     }

@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "D",
+    "S"
+  ],
+  "key": {
+    "D": {
+      "item": "minecraft:dispenser"
+    },
+    "S": {
+      "item": "minecraft:shulker_shell"
+    }
+  },
+  "result": {
+    "item": "focus_shulker_lug:shulker_lug"
+  }
+}
